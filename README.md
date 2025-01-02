@@ -9,8 +9,11 @@ This project leverages deep learning (CNN) to detect skin cancer from images and
 
 ## Installation and Usage
    git clone https://github.com/yourusername/Skin-Cancer-Detection.git
+   
    cd Skin-Cancer-Detection
+   
    pip install -r requirements.txt
+   
    python wsgi.py
 
 ## Results
