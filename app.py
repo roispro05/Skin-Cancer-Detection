@@ -27,7 +27,7 @@ def show():
     inputimg = Image.open(pic)
     inputimg = inputimg.resize((28, 28))
     img = np.array(inputimg).reshape(-1, 28, 28, 3)
-    result = SCD.model.predict(img)
+    result = model.predict(img)
 
     result = result.tolist()
     print(result)
