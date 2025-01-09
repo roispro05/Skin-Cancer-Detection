@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Risk Assessment</title>
+    <style>
+        /* Global Styles for Dark Mode */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg,rgb(36, 27, 21),rgb(49, 37, 29));
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1{
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #b6652f;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 3px rgb(254, 136, 18);
+          }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            padding: 12px 18px;
+            max-width: 75%;
+            border-radius: 25px;
+            word-wrap: break-word;
+            line-height: 1.5;
+            font-size: 16px;
+        }
+        .message.bot {
+            background-color: #333;
+            color: #e0e0e0;
+            align-self: flex-start;
+        }
+        .message.user {
+            background-color: #0078d4;
+            color: white;
+            align-self: flex-end;
+        }
+        .input-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+       border-top: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        button {
+            background-color: rgba(255, 255, 255, 0.2);
+            
+            border-radius: 8px;
+            border: 2px solid #ff6347;
+            display:block;
+            color:white;
+           
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+        }
+        button:hover {
+            background-color: rgba(251, 125, 125, 0.3);
+            border: 2px solid #f99c6e;
+        }
+        .chat-box {
+            scroll-behavior: smooth;
+        }
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 50px;
+          }
+      
+          .nav-buttons .btn {
+            background-color:  rgba(251, 125, 125, 0.3);
+            color: #fff;
+           
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+          }
+      
+          .nav-buttons .btn:hover {
+            background-color: #ffbb99;
+            color:black;
+            transform: scale(1.05);
+          }
+          .footer {
+            font-size: 1rem;
+            color: #ffbb99;
+            text-align:center;
+            
+            margin-top: 30px;
+          }
+      
+          .footer a {
+            color: #ff9747;
+            
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+          }
+      
+          .footer a:hover {
+            color: #ff4500;
+          }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+    
+        <a href="/" class="btn">Back</a>
+        
+      </div>
+    <div class="chat-container">
+        <h1 style="text-align:center">Risk Score Predection</h1>
+        <div id="chat-box" class="chat-box"></div>
+        <div id="input-container" class="input-container"></div>
+        <div class="footer">
+            <p>Powered by <a href="#">Group 11</a></p>
+          </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let currentStep = 1;
+        let userResponses = {};
+
+        const questions = [
+            "How often do you expose yourself to direct sunlight or use tanning beds?",
+            "Do you use sunscreen when exposed to the sun?",
+            "Do you have a family history of skin cancer?",
+            "How would you describe your skin type?",
+            "Do you have a significant number of moles or freckles?"
+        ];
+
+        const options = [
+            ["Never", "Sometimes", "Often", "Always"],
+            ["Never", "Sometimes", "Often", "Always"],
+            ["Yes", "No"],
+            ["Very Fair", "Fair", "Medium", "Dark", "Very Dark"],
+            ["Few", "Moderate", "Many"]
+        ];
+
+        $(document).ready(function () {
+            displayMessage("Hi! I'm here to assess your skin cancer risk. Let's get started.", "bot");
+            displayMessage(questions[0], "bot");
+            showOptions(0);
+        });
+
+        function displayMessage(message, sender) {
+            const messageBubble = `<div class="message ${sender}">${message}</div>`;
+            $("#chat-box").append(messageBubble);
+            $("#chat-box").scrollTop($("#chat-box")[0].scrollHeight);
+        }
+
+        function handleUserInput(option) {
+            userResponses[currentStep] = option;
+            displayMessage(option, "user");
+
+            if (currentStep < 5) {
+                currentStep++;
+                displayMessage(questions[currentStep - 1], "bot");
+                showOptions(currentStep - 1);
+            } else {
+                calculateRisk();
+            }
+        }
+
+        function showOptions(step) {
+            const optionHtml = options[step].map(option =>
+                `<button onclick="handleUserInput('${option}')">${option}</button>`
+            ).join("");
+            $("#input-container").html(optionHtml);
+        }
+
+        function calculateRisk() {
+            $.ajax({
+                url: '/index',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(userResponses),
+                success: function (response) {
+                    displayMessage(`Your Skin Cancer Risk Level: ${response.risk_level}`, "bot");
+                    displayMessage(`Your Risk Percentage: ${response.risk_percentage.toFixed(2)}%`, "bot");
+                    displayMessage(`Suggestion: ${response.suggestion}`, "bot");
+                    $("#input-container").html('<button onclick="restart()">Restart</button>');
+                },
+                error: function () {
+                    displayMessage("An error occurred. Please try again.", "bot");
+                }
+            });
+        }
+
+        function restart() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
