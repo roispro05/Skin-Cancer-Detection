@@ -19,6 +19,9 @@ def runhome():
 @app.route("/showresult", methods=["GET", "POST"])
 def show():
     pic = request.files["pic"]
+    if not pic:
+        print("No file received.")
+        return jsonify({"error": "No file received"}), 400
     inputimg = Image.open(pic)
     inputimg = inputimg.resize((28, 28))
     img = np.array(inputimg).reshape(-1, 28, 28, 3)
