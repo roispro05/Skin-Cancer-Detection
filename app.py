@@ -3,8 +3,10 @@ from flask import Flask, request, render_template,jsonify
 from PIL import Image
 import numpy as np
 import skin_cancer_detection as SCD
+from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
+model = load_model('./best_model.h5')
 
 
 @app.route("/", methods=["GET", "POST"])
